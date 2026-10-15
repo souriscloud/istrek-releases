@@ -11,7 +11,7 @@ Everything you need is on the releases page: https://github.com/souriscloud/istr
 | `LICENSE.md` | The terms. The archive carries a copy as well. |
 | `THIRD-PARTY-NOTICES-linux.md` | The licences of the software the server archive carries (Erlang/OTP, Elixir and the libraries). The archive carries a copy as `istrek/THIRD-PARTY-NOTICES.md`. |
 
-`VERSION` stands for the version number, for example `0.9.2`. Only the amd64 build of the server is published.
+`VERSION` stands for the version number, for example `0.9.3`. Only the amd64 build of the server is published.
 
 The Mac app (`Istrek-VERSION.dmg`) and the command-line tool for the Mac (`istrekctl-VERSION.zip`) are not published yet. They need to be signed and notarized by Apple first, and will appear on the same releases page when they are. Until then, the server, its web pages, its API and its MCP endpoint for agents are what you can use. Steps 7 and 8 describe the Mac app and the command-line tool for the time they are published.
 
@@ -33,22 +33,22 @@ You need no Erlang, Elixir, Node or Docker on the server.
 
 ## 1. Download and verify
 
-Download the archive and its checksum on the server. Replace `0.9.2` with the version you want, everywhere in these commands:
+Download the archive and its checksum on the server. Replace `0.9.3` with the version you want, everywhere in these commands:
 
 ```sh
-curl -LO https://github.com/souriscloud/istrek-releases/releases/download/v0.9.2/istrek-0.9.2-linux-amd64.tar.gz
-curl -LO https://github.com/souriscloud/istrek-releases/releases/download/v0.9.2/istrek-0.9.2-linux-amd64.tar.gz.sha256
-sha256sum -c istrek-0.9.2-linux-amd64.tar.gz.sha256
+curl -LO https://github.com/souriscloud/istrek-releases/releases/download/v0.9.3/istrek-0.9.3-linux-amd64.tar.gz
+curl -LO https://github.com/souriscloud/istrek-releases/releases/download/v0.9.3/istrek-0.9.3-linux-amd64.tar.gz.sha256
+sha256sum -c istrek-0.9.3-linux-amd64.tar.gz.sha256
 ```
 
-The last command must print `istrek-0.9.2-linux-amd64.tar.gz: OK`. If it prints `FAILED`, download the archive again.
+The last command must print `istrek-0.9.3-linux-amd64.tar.gz: OK`. If it prints `FAILED`, download the archive again.
 
 Create a system account and unpack the archive:
 
 ```sh
 sudo useradd --system --create-home --home-dir /var/lib/istrek --shell /usr/sbin/nologin istrek
 sudo mkdir -p /opt/istrek
-sudo tar xzf istrek-0.9.2-linux-amd64.tar.gz -C /opt/istrek --strip-components=1
+sudo tar xzf istrek-0.9.3-linux-amd64.tar.gz -C /opt/istrek --strip-components=1
 ```
 
 The program is now `/opt/istrek/bin/istrek`. It can be owned by root. It writes nothing inside its own folder.
