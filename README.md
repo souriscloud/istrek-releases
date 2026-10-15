@@ -9,8 +9,9 @@ Everything you need is on the releases page: https://github.com/souriscloud/istr
 | `istrek-VERSION-linux-amd64.tar.gz` | The server for Linux on x86-64. It carries its own Erlang runtime. |
 | `istrek-VERSION-linux-amd64.tar.gz.sha256` | Its checksum. |
 | `LICENSE.md` | The terms. The archive carries a copy as well. |
+| `THIRD-PARTY-NOTICES-linux.md` | The licences of the software the server archive carries (Erlang/OTP, Elixir and the libraries). The archive carries a copy as `istrek/THIRD-PARTY-NOTICES.md`. |
 
-`VERSION` stands for the version number, for example `0.9.1`. Only the amd64 build of the server is published.
+`VERSION` stands for the version number, for example `0.9.2`. Only the amd64 build of the server is published.
 
 The Mac app (`Istrek-VERSION.dmg`) and the command-line tool for the Mac (`istrekctl-VERSION.zip`) are not published yet. They need to be signed and notarized by Apple first, and will appear on the same releases page when they are. Until then, the server, its web pages, its API and its MCP endpoint for agents are what you can use. Steps 7 and 8 describe the Mac app and the command-line tool for the time they are published.
 
@@ -32,22 +33,22 @@ You need no Erlang, Elixir, Node or Docker on the server.
 
 ## 1. Download and verify
 
-Download the archive and its checksum on the server. Replace `0.9.1` with the version you want, everywhere in these commands:
+Download the archive and its checksum on the server. Replace `0.9.2` with the version you want, everywhere in these commands:
 
 ```sh
-curl -LO https://github.com/souriscloud/istrek-releases/releases/download/v0.9.1/istrek-0.9.1-linux-amd64.tar.gz
-curl -LO https://github.com/souriscloud/istrek-releases/releases/download/v0.9.1/istrek-0.9.1-linux-amd64.tar.gz.sha256
-sha256sum -c istrek-0.9.1-linux-amd64.tar.gz.sha256
+curl -LO https://github.com/souriscloud/istrek-releases/releases/download/v0.9.2/istrek-0.9.2-linux-amd64.tar.gz
+curl -LO https://github.com/souriscloud/istrek-releases/releases/download/v0.9.2/istrek-0.9.2-linux-amd64.tar.gz.sha256
+sha256sum -c istrek-0.9.2-linux-amd64.tar.gz.sha256
 ```
 
-The last command must print `istrek-0.9.1-linux-amd64.tar.gz: OK`. If it prints `FAILED`, download the archive again.
+The last command must print `istrek-0.9.2-linux-amd64.tar.gz: OK`. If it prints `FAILED`, download the archive again.
 
 Create a system account and unpack the archive:
 
 ```sh
 sudo useradd --system --create-home --home-dir /var/lib/istrek --shell /usr/sbin/nologin istrek
 sudo mkdir -p /opt/istrek
-sudo tar xzf istrek-0.9.1-linux-amd64.tar.gz -C /opt/istrek --strip-components=1
+sudo tar xzf istrek-0.9.2-linux-amd64.tar.gz -C /opt/istrek --strip-components=1
 ```
 
 The program is now `/opt/istrek/bin/istrek`. It can be owned by root. It writes nothing inside its own folder.
@@ -191,6 +192,7 @@ Leave both off. Hosted mode (`ISTREK_HOSTED=1`) is for a server that holds accou
 | `ISTREK_UPDATE_URL` | An HTTPS page where people get a newer Mac app. The server tells the app about it when the app is too old. |
 | `ISTREK_TYPST_CONCURRENCY` | How many PDF renderings may run at once. The default is the number of CPU cores, at least 2. |
 | `ISTREK_TYPST_QUEUE_MS` | How long a rendering waits for a free slot before the request answers 503. The default is 5000. |
+| `ISTREK_TURNSTILE_SITEKEY`, `ISTREK_TURNSTILE_SECRET` | A [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/) widget's sitekey and secret key. Set both, and the e-mail form of the sign-in page checks that the sender is not a script before it sends a link, which keeps scripts from creating accounts and flooding mail. Create the widget in Cloudflare's dashboard in Managed mode, with your public host as its hostname; the free plan is enough. The sign-in page then loads Cloudflare's script and says so. If Cloudflare cannot be reached, the form refuses to send links until it can, so single sign-on or `Istrek.Release.signin_link` is then the way in. Leave both unset for no check. |
 
 ## 5. Run it as a service
 
@@ -364,7 +366,7 @@ If your server has a sign-in page, `istrekctl` can create that file for you thro
 istrekctl login https://time.example.com
 ```
 
-Always give your server's address. Without one, and without `ISTREK_URL`, `istrekctl login` signs in to the hosted Istrek service instead.
+Always give your server's address. Without one, and without `ISTREK_URL`, `istrekctl login` signs in to the hosted Istrek service at `https://istrek.souris.cloud` instead. Its first line names the server it signs in to.
 
 It prints an address and a code, waits for you to approve it, and writes the connection file (mode 0600, by default `~/.config/istrek/connection.json`). You can also set `ISTREK_URL` and `ISTREK_TOKEN` instead of a file. `istrekctl version` shows its own version and, when a connection is set, the server's.
 
@@ -464,6 +466,7 @@ To go back, stop the server, unpack the previous archive and start it. A release
 | `ISTREK_PUBLIC_URL must not have a path` | Give Istrek a host of its own. |
 | `ISTREK_MAIL_FROM must be the sender's address` | Set `ISTREK_MAIL_FROM` whenever `ISTREK_SMTP_HOST` is set. |
 | `single sign-on needs ISTREK_OIDC_ISSUER, ISTREK_OIDC_CLIENT_ID and ISTREK_OIDC_CLIENT_SECRET together` | Set all three, or none. |
+| `ISTREK_TURNSTILE_SECRET is not set` or `ISTREK_TURNSTILE_SITEKEY is not set` | Set both Turnstile keys, or neither. |
 | `ISTREK_BIND must be an IP address` | Use an address such as `127.0.0.1`. |
 
 A missing `DATABASE_URL` stops the start as well.
@@ -479,6 +482,8 @@ A missing `DATABASE_URL` stops the start as well.
 **The app says the server is too old or the app is too old.** Update the older side. See "Upgrading".
 
 **Sign-in e-mails do not arrive.** Check `ISTREK_SMTP_HOST` and the login, then look in the spam folder. Without `ISTREK_SMTP_HOST`, nothing is sent, and the log holds one line without the link. Use `Istrek.Release.signin_link` as shown above.
+
+**The sign-in page says "The check that you are not a robot could not be made at the moment".** The server could not reach `challenges.cloudflare.com` within five seconds, or Cloudflare refused the secret key. The log says which (`Turnstile check could not be made`). Check that the server can make outgoing HTTPS connections and that `ISTREK_TURNSTILE_SECRET` belongs to the sitekey.
 
 **Many people appear to come from one address, or everyone is locked out of sign-in together.** `ISTREK_TRUSTED_PROXIES` is wrong. It must equal the number of proxies in front of the server.
 

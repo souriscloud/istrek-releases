@@ -22,9 +22,11 @@ documentation.
 3. Reverse engineer, decompile or disassemble it, except where the law allows it regardless
    of this licence.
 
-The fonts shipped with the software keep their own licences, which are included with them.
-Other third-party components, such as the Erlang runtime and the libraries the software is
-built on, keep their own licences as well.
+Third-party components keep their own licences. Their notices and licence texts are in
+THIRD-PARTY-NOTICES.md: at the top of the Linux archive (`istrek/THIRD-PARTY-NOTICES.md`),
+inside the Mac app (`Istrek.app/Contents/Resources/THIRD-PARTY-NOTICES.md`), and beside each
+download on the releases page. The fonts shipped with the software also carry their own
+licence files.
 
 ## Your data
 
