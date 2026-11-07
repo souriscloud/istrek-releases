@@ -9,11 +9,13 @@ Everything you need is on the releases page: https://github.com/souriscloud/istr
 | `istrek-VERSION-linux-amd64.tar.gz` | The server for Linux on x86-64. It carries its own Erlang runtime. |
 | `istrek-VERSION-linux-amd64.tar.gz.sha256` | Its checksum. |
 | `LICENSE.md` | The terms. The archive carries a copy as well. |
+| `Istrek-VERSION.dmg` | The Mac app, for macOS 14 or later. |
+| `istrekctl-VERSION.zip` | The command-line tool for the Mac. |
 | `THIRD-PARTY-NOTICES-linux.md` | The licences of the software the server archive carries (Erlang/OTP, Elixir and the libraries). The archive carries a copy as `istrek/THIRD-PARTY-NOTICES.md`. |
 
-`VERSION` stands for the version number, for example `0.9.4`. Only the amd64 build of the server is published.
+`VERSION` stands for the version number, for example `0.9.5`. Only the amd64 build of the server is published.
 
-The Mac app (`Istrek-VERSION.dmg`) and the command-line tool for the Mac (`istrekctl-VERSION.zip`) are not published yet. They need to be signed and notarized by Apple first, and will appear on the same releases page when they are. Until then, the server, its web pages, its API and its MCP endpoint for agents are what you can use. Steps 7 and 8 describe the Mac app and the command-line tool for the time they are published.
+The Mac app (`Istrek-VERSION.dmg`) and the command-line tool for the Mac (`istrekctl-VERSION.zip`) are not published yet. They need to be signed and notarized by Apple first, and will appear on the same releases page when they are. Until then, the server, its web pages, its API and its MCP endpoint for agents are what you can use.
 
 ## Licence
 
@@ -33,22 +35,22 @@ You need no Erlang, Elixir, Node or Docker on the server.
 
 ## 1. Download and verify
 
-Download the archive and its checksum on the server. Replace `0.9.4` with the version you want, everywhere in these commands:
+Download the archive and its checksum on the server. Replace `0.9.5` with the version you want, everywhere in these commands:
 
 ```sh
-curl -LO https://github.com/souriscloud/istrek-releases/releases/download/v0.9.4/istrek-0.9.4-linux-amd64.tar.gz
-curl -LO https://github.com/souriscloud/istrek-releases/releases/download/v0.9.4/istrek-0.9.4-linux-amd64.tar.gz.sha256
-sha256sum -c istrek-0.9.4-linux-amd64.tar.gz.sha256
+curl -LO https://github.com/souriscloud/istrek-releases/releases/download/v0.9.5/istrek-0.9.5-linux-amd64.tar.gz
+curl -LO https://github.com/souriscloud/istrek-releases/releases/download/v0.9.5/istrek-0.9.5-linux-amd64.tar.gz.sha256
+sha256sum -c istrek-0.9.5-linux-amd64.tar.gz.sha256
 ```
 
-The last command must print `istrek-0.9.4-linux-amd64.tar.gz: OK`. If it prints `FAILED`, download the archive again.
+The last command must print `istrek-0.9.5-linux-amd64.tar.gz: OK`. If it prints `FAILED`, download the archive again.
 
 Create a system account and unpack the archive:
 
 ```sh
 sudo useradd --system --create-home --home-dir /var/lib/istrek --shell /usr/sbin/nologin istrek
 sudo mkdir -p /opt/istrek
-sudo tar xzf istrek-0.9.4-linux-amd64.tar.gz -C /opt/istrek --strip-components=1
+sudo tar xzf istrek-0.9.5-linux-amd64.tar.gz -C /opt/istrek --strip-components=1
 ```
 
 The program is now `/opt/istrek/bin/istrek`. It can be owned by root. It writes nothing inside its own folder.
@@ -183,7 +185,7 @@ For a server that you run for yourself, leave it `closed`. `ISTREK_OIDC_SIGNUP` 
 
 ### Hosted mode and billing
 
-Leave both off. Hosted mode (`ISTREK_HOSTED=1`) is for a server that holds accounts of people who do not know each other. It turns off watched folders and changes what the landing page shows. Billing (`ISTREK_BILLING`) charges accounts through Stripe and is only meant for a service that sells access. On a server you run for yourself or your team, an unset `ISTREK_BILLING` means every account has full access and the app shows no plan.
+Leave both off. `ISTREK_HOSTED` and `ISTREK_BILLING` are the switches of Istrek Cloud, the hosted service at istrek.souris.cloud, and not for a server you run. Hosted mode (`ISTREK_HOSTED=1`) is for a server that holds accounts of people who do not know each other. It turns off watched folders. Billing (`ISTREK_BILLING`) charges accounts through Stripe. On a server you run for yourself or your team, an unset `ISTREK_BILLING` means every account has full access and the app shows no plan. `ISTREK_GA_MEASUREMENT_ID`, `ISTREK_CLARITY_PROJECT_ID` and `ISTREK_INDEXNOW_KEY` exist only for the landing page of Istrek Cloud. A server you run has no landing page (its `/` leads to `/account`), so leave them unset.
 
 ### Other optional settings
 
@@ -333,7 +335,7 @@ curl https://time.example.com/health
 
 ## 7. Connect the Mac app
 
-The Mac app is not published yet (see the start of this guide). When it is, download `Istrek-VERSION.dmg` from the releases page, open it and drag Istrek to Applications. The first time you open the app with no connection, a sheet asks where your time entries live. Choose **My own server**. There are three ways to connect.
+Download `Istrek-VERSION.dmg` from the releases page (see the note at the top), open it and drag Istrek to Applications. The first time you open the app with no connection, a sheet asks where your time entries live: Istrek Cloud, My own server, or Look around first. Choose **My own server**. There are three ways to connect.
 
 **With an owner token.** Type the server address (`https://time.example.com`) in **Server**, type the token that `bootstrap` printed in **Owner token**, and choose **Connect**.
 
@@ -353,22 +355,16 @@ Under Settings, Connection, the app shows the server and the address you are sig
 
 ## 8. Connect the command-line tool
 
-The command-line tool is not published yet either. When it is, unzip `istrekctl-VERSION.zip` and put `istrekctl` in a folder on your `PATH`. It reads the same connection file:
-
-```sh
-export ISTREK_CONNECTION="$HOME/.config/istrek/connection.json"
-istrekctl me
-```
-
-If your server has a sign-in page, `istrekctl` can create that file for you through the browser:
+Download `istrekctl-VERSION.zip` from the releases page, unzip it and put `istrekctl` in a folder on your `PATH`. If your server has a sign-in page, sign in through the browser and check the connection:
 
 ```sh
 istrekctl login https://time.example.com
+istrekctl me
 ```
 
-Always give your server's address. Without one, and without `ISTREK_URL`, `istrekctl login` signs in to the hosted Istrek service at `https://istrek.souris.cloud` instead. Its first line names the server it signs in to.
+Always give your server's address. Without one, and without `ISTREK_URL`, `istrekctl login` signs in to Istrek Cloud at `https://istrek.souris.cloud` instead. Its first line names the server it signs in to.
 
-It prints an address and a code, waits for you to approve it, and writes the connection file (mode 0600, by default `~/.config/istrek/connection.json`). You can also set `ISTREK_URL` and `ISTREK_TOKEN` instead of a file. `istrekctl version` shows its own version and, when a connection is set, the server's.
+`istrekctl login` prints an address and a code, waits for you to approve it, and writes the connection file (mode 0600, by default `~/.config/istrek/connection.json`). Every later command reads that file by itself, and a second `login` replaces it. To use another file, set `ISTREK_CONNECTION` to its path. Without a sign-in page, save the connection file from step 7 as `~/.config/istrek/connection.json`, or set `ISTREK_URL` and `ISTREK_TOKEN` instead of a file. `istrekctl version` shows its own version and, when a connection is set, the server's.
 
 ## 9. Connect agents
 
@@ -381,12 +377,12 @@ curl -s -H "Authorization: Bearer ist_PASTE-THE-OWNER-TOKEN" \
   https://time.example.com/api/v1/tokens
 ```
 
-The answer carries the new credential in `token`, shown once. The roles are `agent`, `reader` (read-only) and `importer`. Once `istrekctl` is published, `istrekctl token "Assistant" ~/.config/istrek/agents/assistant.json` does the same and writes a connection file for the agent.
+The answer carries the new credential in `token`, shown once. The roles are `agent`, `reader` (read-only) and `importer`. `istrekctl token "Assistant" ~/.config/istrek/agents/assistant.json` does the same and writes a connection file for the agent.
 
 Two ways to connect a client:
 
 - Over HTTP. Point the client at `https://time.example.com/mcp` and send `Authorization: Bearer YOUR_AGENT_TOKEN`.
-- Through a local program, once `istrekctl` is published. Register `istrekctl` with the argument `mcp` and the path of the agent's connection file:
+- Through a local program. Register `istrekctl` with the argument `mcp` and the path of the agent's connection file:
 
 ```json
 {

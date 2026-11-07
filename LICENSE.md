@@ -33,6 +33,8 @@ licence files.
 What you put into the software belongs to you. A server you run yourself sends nothing to
 Souris.CLOUD. The Mac app and `istrekctl` contact Souris.CLOUD only when you connect them to
 the hosted service; `istrekctl login` without a server address does that.
+The Mac app also asks GitHub (`raw.githubusercontent.com`) whether an update is available;
+starting it with the environment variable `ISTREK_DISABLE_UPDATES=1` turns that off.
 
 ## No warranty
 
