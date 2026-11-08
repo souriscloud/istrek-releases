@@ -1,0 +1,115 @@
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>Istrek</title>
+        <item>
+            <title>0.9.5</title>
+            <pubDate>Sun, 08 Nov 2026 15:28:21 +0100</pubDate>
+            <sparkle:version>905</sparkle:version>
+            <sparkle:shortVersionString>0.9.5</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[# Istrek 0.9.5
+
+`istrekctl` remembers its sign-in, agent and reader credentials can be created on the web,
+the Mac app's first run always offers a way to run your own server, and a hosted server
+gains terms and a privacy notice.
+
+Nothing changes in the API. Clients of 0.6.0 and later are served.
+
+## New
+
+- **`istrekctl` reads the file `istrekctl login` saves.** After you sign in, every command
+  uses that connection by itself, with no `ISTREK_CONNECTION` to export. The file is
+  `$XDG_CONFIG_HOME/istrek/connection.json` when `XDG_CONFIG_HOME` is set, otherwise
+  `~/.config/istrek/connection.json`. `ISTREK_CONNECTION`, and `ISTREK_URL` with
+  `ISTREK_TOKEN`, still come first when they are set. `istrekctl version` finds the file
+  the same way.
+- **Signing in again replaces the file safely.** A second `istrekctl login` writes the new
+  credential to a private file beside the old one and only then puts it in its place, so a
+  sign-in that fails or is denied leaves your old connection as it was.
+- **Agent and reader credentials on the web.** The devices page of your account has a
+  **Create a credential** form: give it a name, choose Agent or Reader, and the next page
+  shows the token once, with the server, API and MCP addresses to use it with and a
+  connection file for `istrekctl`. These credentials are listed and revoked like any other.
+  Owner and importer credentials are not offered there. A read-only account cannot create
+  one until a plan is paid; revoking still works.
+- **Terms and privacy pages on Istrek Cloud.** A hosted server serves `/terms` and
+  `/privacy`, linked from the foot of the public pages and named on the sign-in page, the
+  pricing card and the billing page. The privacy notice describes only what the server has
+  switched on (sign-in protection, single sign-on, payments, analytics). On a self-hosted
+  server both addresses answer 404.
+
+## Changed
+
+- **Clearer `istrekctl login` failures.** The messages speak of the terminal and the
+  browser, not the Mac app, and the common failures have their own exit codes: 64 for an address that
+  is not `https://` (or `http://` on localhost), 77 when the request is denied or the code
+  expires, 75 when the server cannot be reached or is busy. The help lists exit code 76
+  (this `istrekctl` and the server do not work together) and says where the connection
+  comes from.
+- **The default server is called Istrek Cloud.** `istrekctl login` without an address
+  signs in to Istrek Cloud at `https://istrek.souris.cloud` and says so on its first line.
+- **Download links follow `ISTREK_UPDATE_URL`.** With it set, the landing page, the account
+  overview and an empty devices page link to **Get the Mac app and istrekctl** at that
+  address. Without it they say that the Mac app and `istrekctl` are not released yet, and
+  that the account pages, the API and the MCP endpoint work now.
+- **The devices page names your own server.** An empty devices page on a self-hosted server
+  tells you to choose My own server with this server's address, or to run
+  `istrekctl login` with it, and never points you at Istrek Cloud.
+- **The Mac app's first run.** The sheet offers four cards: Istrek Cloud, My own server,
+  Run your own server and Look around first. **Run your own server** is always there,
+  slightly dimmed until you point at it or select it, so Istrek Cloud stays the first
+  choice. Its pane says the server is free to run on a Linux machine, links the
+  self-hosting guide and the downloads, and **Connect to your server** takes you to My own
+  server. The Istrek Cloud pane has no default button any more: pressing Return on an
+  untouched sheet signs in nowhere.
+- **Help in the Mac app** explains the trial, the subscription and the read-only account
+  only when the connected server bills, and no longer states prices; the account page
+  shows them.
+- **Updates in the Mac app.** The built-in updater starts only in a build signed by its
+  developer. A build signed on your own Mac does not run it, and **Check for Updates…** is
+  shown only where it works.
+- **No VAT on Istrek Cloud.** The seller is not a VAT payer, so no VAT is added to the
+  prices, for consumers and businesses alike, and the amounts shown are final. The pages and
+  e-mails say so, and the payment page and every invoice carry "Not a VAT payer (neplátce
+  DPH)." You can still give a VAT ID; it is printed on your invoices and changes nothing in
+  the amount.
+- **Accepting the terms at payment.** On Istrek Cloud, the payment page has a box you tick
+  to accept the terms and to ask for the paid plan to start at once. It also says that a
+  consumer who withdraws within 14 days is refunded the payment minus the days used.
+- **Pricing on the landing page.** The hosted card is called Istrek Cloud. While payments
+  are off, the landing page promises no trial and no read-only state.
+- **The self-hosting guide** signs in with `istrekctl login https://time.example.com` and
+  checks the connection with `istrekctl me`. It says that `ISTREK_HOSTED` and
+  `ISTREK_BILLING` are the switches of Istrek Cloud and not meant for a server you run, and
+  that the analytics and IndexNow keys serve only its landing page.
+- **Security updates.** The server's dependencies were updated for security fixes, among
+  them its web server (Bandit) and its HTTP client.
+- **The licence** says that the Mac app asks GitHub (`raw.githubusercontent.com`) whether an
+  update is available, and that starting it with `ISTREK_DISABLE_UPDATES=1` turns that off.
+
+## Removed
+
+- The landing page's film and its poster, which no page showed, are no longer shipped or
+  served.
+
+## Before you update
+
+- No migration and no new required setting. 0.6.0 and later clients are served.
+- If you run `istrekctl` with neither `ISTREK_CONNECTION` nor `ISTREK_TOKEN` set and a
+  connection file sits at the default path, commands now use it instead of stopping with a
+  missing-credential error.
+- If you link to the film or its poster from anywhere, those links now answer 404.
+
+## Known limits
+
+- The Mac app (`Istrek-VERSION.dmg`) and `istrekctl-VERSION.zip` are not published yet.
+- Only the amd64 build of the server is published.
+- Google's tag cannot be unloaded: when a visitor withdraws consent, Google Analytics stops
+  from the next page on. Clarity stops at once.
+- Istrek has not been audited or penetration-tested by an outside party.
+]]></description>
+            <enclosure url="https://github.com/souriscloud/istrek-releases/releases/download/v0.9.5/Istrek-0.9.5.dmg" length="21758181" type="application/octet-stream" sparkle:edSignature="U3Y19xZe6x92JUhVtBcayf2+xBzCejrcYAjERgWuP80LX83l+mg5/bdxrPkr0q1vB35uNnDKfIrnQPmhpkkbBA=="/>
+        </item>
+    </channel>
+</rss>
